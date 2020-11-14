@@ -8,6 +8,7 @@ import guitarpro
 import shutil
 import os
 
+    
 sixthStringValue = 0
 standardEcount = 0
 standardEbcount = 0
@@ -29,7 +30,11 @@ quantityOfDropDb = 0
 quantityOfDropC = 0
 quantityOfDropB = 0
 
-## FUNCTIONS
+fileCount = 0
+tabsMoved = 0
+files = os.listdir(os.path.abspath(os.getcwd()))
+filesToTest = []
+
 def moveFile(gpFile , tuning):
 
     global quantityOfStandardE
@@ -41,6 +46,7 @@ def moveFile(gpFile , tuning):
     global quantityOfDropDb
     global quantityOfDropC
     global quantityOfDropB
+    global tabsMoved
 
     if not os.path.isdir(tuning):
         os.mkdir(tuning)
@@ -65,7 +71,8 @@ def moveFile(gpFile , tuning):
         quantityOfDropB += 1
     
     print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]" + " -> " + tuning + " found !")
-    shutil.move(gpFile, tuning)    
+    shutil.move(gpFile, tuning) 
+    tabsMoved += 1   
 
 def resetTuningCount():
     global sixthStringValue
@@ -160,97 +167,110 @@ def checkTuning(string):
         standardCcount += 1 
 
 
-files = os.listdir(os.path.abspath(os.getcwd()))
-filesToTest = []
-fileCount = 0
 
-for file in files:
-    if file.endswith(('.gp5', '.gp4', '.gp3')):
-        filesToTest.append(file)
+def main():
 
-for gpFile in filesToTest:
+    global fileCount
+    global files
+    global filesToTest
 
-    try:
-        song = guitarpro.parse(gpFile)
-    except:
-        print("error reading file - " + str(gpFile))
+    for file in files:
+        if file.endswith(('.gp5', '.gp4', '.gp3')):
+            filesToTest.append(file)
 
-    resetTuningCount()
+    for gpFile in filesToTest:
 
-    tracks = (track for track in song.tracks)
-    
-    for track in tracks:
-        if (track.isPercussionTrack == False):
+        try:
+            song = guitarpro.parse(gpFile)
+        except:
+            print("error reading file - " + str(gpFile))
 
-            strings = track.strings
-
-            for string in strings:
-
-                checkTuning(string)
-
-
-    # move Standard E
-    if standardEcount >= 1:
         resetTuningCount()
-        moveFile(gpFile, "Standard E")
 
-    # move Standard Eb
-    if standardEbcount >= 1:
-        resetTuningCount()
-        moveFile(gpFile, "Standard Eb")
+        tracks = (track for track in song.tracks)
         
-    # move Standard D
-    if standardDcount >= 1:
-        resetTuningCount()
-        moveFile(gpFile, "Standard D")
+        for track in tracks:
+            if (track.isPercussionTrack == False):
 
-    # move Standard C
-    if standardCcount >= 1:
-        resetTuningCount()
-        moveFile(gpFile, "Standard C")
+                strings = track.strings
 
-    # move Standard B
-    if standardBcount >= 1:
-        resetTuningCount()
-        moveFile(gpFile, "Standard B")
+                for string in strings:
 
-    # move Drop D
-    if dropDcount >= 1:
-        resetTuningCount()
-        moveFile(gpFile, "Drop D")
+                    checkTuning(string)
 
-    # move Drop Db
-    if dropDbcount >= 1:
-        resetTuningCount()
-        moveFile(gpFile, "Drop Db")
+        # move Standard B
+        if standardBcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Standard B")
 
-    # move Drop C
-    if dropCcount >= 1:
-        resetTuningCount()
-        moveFile(gpFile, "Drop C")
-    
-    # move Drop B
-    if dropBcount >= 1:
-        resetTuningCount()
-        moveFile(gpFile, "Drop B")
+        # move Drop B
+        if dropBcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Drop B")
 
-    fileCount += 1
+        # move Standard C
+        if standardCcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Standard C")
+
+        # move Drop C
+        if dropCcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Drop C")
+
+        # move Standard D
+        if standardDcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Standard D")
+
+        # move Drop D
+        if dropDcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Drop D")
+
+        # move Drop Db
+        if dropDbcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Drop Db")
+
+        # move Standard Eb
+        if standardEbcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Standard Eb")
+            
+        # move Standard E
+        if standardEcount >= 1:
+            resetTuningCount()
+            moveFile(gpFile, "Standard E")
+
+        
+        fileCount += 1
 
 
-print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]")
-print("Finished!")
-print("---------------------------------------------------------------------------------")
-print(" Standard E found:   " + str(quantityOfStandardE))
-print(" Standard Eb found:  " + str(quantityOfStandardEb))
-print(" Standard D found:   " + str(quantityOfStandardD))
-print(" Standard C found:   " + str(quantityOfStandardC))
-print(" Standard B found:   " + str(quantityOfStandardB))
-print(" Drop D found:       " + str(quantityOfDropD))
-print(" Drop Db found:      " + str(quantityOfDropDb))
-print(" Drop C found:       " + str(quantityOfDropC))
-print(" Drop B found:       " + str(quantityOfDropB))
+    effectiveness = str((fileCount / tabsMoved) * 100) + "%"
 
-input("Press any key to exit")
+    print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]")
+    print("Finished!")
+    print("---------------------------------------------------------------------------------")
+    print(" Standard E found:   " + str(quantityOfStandardE))
+    print(" Standard Eb found:  " + str(quantityOfStandardEb))
+    print(" Standard D found:   " + str(quantityOfStandardD))
+    print(" Standard C found:   " + str(quantityOfStandardC))
+    print(" Standard B found:   " + str(quantityOfStandardB))
+    print(" Drop D found:       " + str(quantityOfDropD))
+    print(" Drop Db found:      " + str(quantityOfDropDb))
+    print(" Drop C found:       " + str(quantityOfDropC))
+    print(" Drop B found:       " + str(quantityOfDropB))
+
+    print(" effectiveness: ", effectiveness)
+
+    input("Press any key to exit")
+
+
+
+
+if __name__ == "__main__":
+    main()
 
 
     
