@@ -7,33 +7,6 @@ import guitarpro
 import shutil
 import os
 
-    
-sixthStringValue = 0
-standardEcount = 0
-standardEbcount = 0
-standardDcount = 0
-standardCcount = 0
-standardBcount = 0
-dropDcount = 0
-dropDbcount = 0
-dropCcount = 0
-dropBcount = 0
-
-quantityOfStandardE = 0
-quantityOfStandardEb = 0
-quantityOfStandardD= 0
-quantityOfStandardC = 0
-quantityOfStandardB = 0
-quantityOfDropD = 0
-quantityOfDropDb = 0
-quantityOfDropC = 0
-quantityOfDropB = 0
-
-fileCount = 0
-tabsMoved = 0
-files = os.listdir(os.path.abspath(os.getcwd()))
-filesToTest = []
-
 def moveFile(gpFile , tuning):
 
     global quantityOfStandardE
@@ -46,7 +19,7 @@ def moveFile(gpFile , tuning):
     global quantityOfDropC
     global quantityOfDropB
     global tabsMoved
-
+    global copyFiles
     if not os.path.isdir(tuning):
         os.mkdir(tuning)
 
@@ -70,7 +43,12 @@ def moveFile(gpFile , tuning):
         quantityOfDropB += 1
     
     print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]" + " -> " + tuning + " found !")
-    shutil.move(gpFile, tuning) 
+
+    if copyFiles == True:
+        shutil.copy(gpFile, tuning)
+    else:
+        shutil.move(gpFile, tuning) 
+    
     tabsMoved += 1   
 
 def resetTuningCount():
@@ -170,8 +148,10 @@ def checkTuning(string):
 def main():
 
     global fileCount
+    global tabsMoved
     global files
     global filesToTest
+    global errorFiles
 
     for file in files:
         if file.endswith(('.gp5', '.gp4', '.gp3')):
@@ -203,51 +183,55 @@ def main():
             moveFile(gpFile, "Standard B")
 
         # move Drop B
-        if dropBcount >= 1:
+        elif dropBcount >= 1:
             resetTuningCount()
             moveFile(gpFile, "Drop B")
 
         # move Standard C
-        if standardCcount >= 1:
+        elif standardCcount >= 1:
             resetTuningCount()
             moveFile(gpFile, "Standard C")
 
         # move Drop C
-        if dropCcount >= 1:
+        elif dropCcount >= 1:
             resetTuningCount()
             moveFile(gpFile, "Drop C")
 
         # move Standard D
-        if standardDcount >= 1:
+        elif standardDcount >= 1:
             resetTuningCount()
             moveFile(gpFile, "Standard D")
 
         # move Drop D
-        if dropDcount >= 1:
+        elif dropDcount >= 1:
             resetTuningCount()
             moveFile(gpFile, "Drop D")
 
         # move Drop Db
-        if dropDbcount >= 1:
+        elif dropDbcount >= 1:
             resetTuningCount()
             moveFile(gpFile, "Drop Db")
 
         # move Standard Eb
-        if standardEbcount >= 1:
+        elif standardEbcount >= 1:
             resetTuningCount()
             moveFile(gpFile, "Standard Eb")
             
         # move Standard E
-        if standardEcount >= 1:
+        elif standardEcount >= 1:
             resetTuningCount()
             moveFile(gpFile, "Standard E")
 
-        
+        else:
+            errorFiles.append(gpFile)
+
         fileCount += 1
 
-
-    effectiveness = str((fileCount / tabsMoved) * 100) + "%"
-
+    if tabsMoved  == 0:
+        effectiveness = "100%"        
+    else:
+        effectiveness = str((tabsMoved / fileCount) * 100) + "%"
+        
     print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]")
     print("Finished!")
     print("---------------------------------------------------------------------------------")
@@ -261,7 +245,18 @@ def main():
     print(" Drop C found:       " + str(quantityOfDropC))
     print(" Drop B found:       " + str(quantityOfDropB))
 
-    print(" effectiveness: ", effectiveness)
+    print()
+
+    print(" effectiveness:     ", effectiveness)
+
+    print()
+
+    if len(errorFiles) > 0 :
+        print(" this files failed: ")
+        for file in errorFiles:
+            print("     ", file)
+
+    print()
 
     input("Press any key to exit")
 
@@ -269,6 +264,35 @@ def main():
 
 
 if __name__ == "__main__":
+        
+    sixthStringValue = 0
+    standardEcount = 0
+    standardEbcount = 0
+    standardDcount = 0
+    standardCcount = 0
+    standardBcount = 0
+    dropDcount = 0
+    dropDbcount = 0
+    dropCcount = 0
+    dropBcount = 0
+
+    quantityOfStandardE = 0
+    quantityOfStandardEb = 0
+    quantityOfStandardD= 0
+    quantityOfStandardC = 0
+    quantityOfStandardB = 0
+    quantityOfDropD = 0
+    quantityOfDropDb = 0
+    quantityOfDropC = 0
+    quantityOfDropB = 0
+
+    errorFiles = []
+    copyFiles = True
+    fileCount = 0
+    tabsMoved = 0
+    files = os.listdir(os.path.abspath(os.getcwd()))
+    filesToTest = []
+
     main()
 
 
