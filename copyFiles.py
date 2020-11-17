@@ -19,7 +19,6 @@ def moveFile(gpFile , tuning):
     global quantityOfDropC
     global quantityOfDropB
     global tabsMoved
-    global copyFiles
     if not os.path.isdir(tuning):
         os.mkdir(tuning)
 
@@ -44,11 +43,8 @@ def moveFile(gpFile , tuning):
     
     print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]" + " -> " + tuning + " found !")
 
-    if copyFiles == True:
-        shutil.copy(gpFile, tuning)
-    else:
-        shutil.move(gpFile, tuning) 
-    
+    shutil.copy(gpFile, tuning)
+
     tabsMoved += 1   
 
 def resetTuningCount():
@@ -258,7 +254,7 @@ def main():
 
     print()
 
-    input("Press any key to exit")
+    #input("Press any key to exit")
 
 
 
@@ -287,7 +283,6 @@ if __name__ == "__main__":
     quantityOfDropB = 0
 
     errorFiles = []
-    copyFiles = True
     fileCount = 0
     tabsMoved = 0
     files = os.listdir(os.path.abspath(os.getcwd()))
