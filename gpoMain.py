@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QThread, pyqtSignal
 import os
 import copyFiles
@@ -24,7 +25,6 @@ class lunchFunc(QThread):
     def update(self, value):
         self.progress = value
         self.progressChanged.emit(self.progress)
-
 
     def run(self):
         self.progressChanged.emit(self.progress)
@@ -99,7 +99,10 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.working = False
+
         self.startButton.clicked.connect(self.checkFuncAndStart)
+        self.browseButton.clicked.connect(self.browseFolder)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -111,32 +114,43 @@ class Ui_MainWindow(object):
         self.copyFile.setText(_translate("MainWindow", "Copy"))
         self.moveFile.setText(_translate("MainWindow", "Move"))
 
+    def browseFolder(self):
+        folder = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
+        self.directionTextBox.setText(folder)
+
     def checkFuncAndStart(self):
         direction = self.directionTextBox.text()
 
+        if self.working == False:
+            
+            self.working == True
 
-        if self.copyFile.isChecked():
-            self.prog = lunchFunc()
-            self.prog.progressChanged.connect(self.Progress)
-            self.prog.start()
+            if self.copyFile.isChecked():
+                self.prog = lunchFunc()
+                self.prog.progressChanged.connect(self.Progress)
+                self.prog.start()
 
-            copyFiles.main(direction, self)
-            self.currentFileLabel.setText("")
+                copyFiles.main(direction, self)
+                self.currentFileLabel.setText("")
+                self.working = False
 
-        elif self.moveFile.isChecked():
-            self.prog = lunchFunc()
-            self.prog.progressChanged.connect(self.Progress)
-            self.prog.start()
+            elif self.moveFile.isChecked():
+                self.prog = lunchFunc()
+                self.prog.progressChanged.connect(self.Progress)
+                self.prog.start()
 
-            moveFiles.main(direction, self)
-            self.currentFileLabel.setText("")
-        elif self.analyseFile.isChecked():
-            self.prog = lunchFunc()
-            self.prog.progressChanged.connect(self.Progress)
-            self.prog.start()
+                moveFiles.main(direction, self)
+                self.currentFileLabel.setText("")
+                self.working = False
 
-            analyzeFiles.main(direction, self)
-            self.currentFileLabel.setText("")
+            elif self.analyseFile.isChecked():
+                self.prog = lunchFunc()
+                self.prog.progressChanged.connect(self.Progress)
+                self.prog.start()
+
+                analyzeFiles.main(direction, self)
+                self.currentFileLabel.setText("")
+                self.working = False
 
     
     def changeSong(self, song):
