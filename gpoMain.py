@@ -9,7 +9,25 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QThread, pyqtSignal
+import os
+import copyFiles
+import moveFiles
+import analyzeFiles
+import threading
 
+class lunchFunc(QThread):
+    progressChanged = pyqtSignal(int)
+
+    progress = 0
+
+    def update(self, value):
+        self.progress = value
+        self.progressChanged.emit(self.progress)
+
+
+    def run(self):
+        self.progressChanged.emit(self.progress)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -34,7 +52,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
         self.progressBar.setGeometry(QtCore.QRect(10, 120, 360, 21))
-        self.progressBar.setProperty("value", 24)
+        self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.startButton = QtWidgets.QPushButton(self.centralwidget)
         self.startButton.setGeometry(QtCore.QRect(240, 40, 125, 55))
@@ -54,6 +72,7 @@ class Ui_MainWindow(object):
         self.directionTextBox = QtWidgets.QLineEdit(self.centralwidget)
         self.directionTextBox.setGeometry(QtCore.QRect(20, 10, 285, 25))
         self.directionTextBox.setFrame(True)
+        self.directionTextBox.setProperty("text", os.getcwd())
         self.directionTextBox.setObjectName("directionTextBox")
         self.browseButton = QtWidgets.QPushButton(self.centralwidget)
         self.browseButton.setGeometry(QtCore.QRect(310, 10, 55, 25))
@@ -80,6 +99,8 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.startButton.clicked.connect(self.checkFuncAndStart)
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Guitar Pro Organizer"))
@@ -90,6 +111,39 @@ class Ui_MainWindow(object):
         self.copyFile.setText(_translate("MainWindow", "Copy"))
         self.moveFile.setText(_translate("MainWindow", "Move"))
 
+    def checkFuncAndStart(self):
+        direction = self.directionTextBox.text()
+
+
+        if self.copyFile.isChecked():
+            self.prog = lunchFunc()
+            self.prog.progressChanged.connect(self.Progress)
+            self.prog.start()
+
+            copyFiles.main(direction, self)
+            self.currentFileLabel.setText("")
+
+        elif self.moveFile.isChecked():
+            self.prog = lunchFunc()
+            self.prog.progressChanged.connect(self.Progress)
+            self.prog.start()
+
+            moveFiles.main(direction, self)
+            self.currentFileLabel.setText("")
+        elif self.analyseFile.isChecked():
+            self.prog = lunchFunc()
+            self.prog.progressChanged.connect(self.Progress)
+            self.prog.start()
+
+            analyzeFiles.main(direction, self)
+            self.currentFileLabel.setText("")
+
+    
+    def changeSong(self, song):
+        self.currentFileLabel.setText(song)
+
+    def Progress(self, value):
+        self.progressBar.setValue(value)
 
 if __name__ == "__main__":
     import sys
