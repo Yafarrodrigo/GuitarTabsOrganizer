@@ -8,22 +8,24 @@ import shutil
 import os
 import math
 
-def moveFile(gpFile , tuning, fileCount, filesToTest, UI):
+def moveFile(gpFile , tuning, fileCount, filesToTest, UI, fileDirectionOutput):
 
     global tabsMoved
-    if not os.path.isdir(tuning):
-        os.mkdir(tuning)
-    
-    print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]" + " -> " + tuning + " found !")
 
-    shutil.move(gpFile, tuning)
+    pathToCopy = os.path.join(fileDirectionOutput, tuning)
 
-    tabsMoved += 1  
+
+    if not os.path.isdir(pathToCopy):
+        os.makedirs(pathToCopy)
+
+    shutil.move(gpFile, pathToCopy)
+
+    tabsMoved += 1   
 
     progress = math.floor((fileCount / len(filesToTest))*100)
-    UI.prog.update(progress) 
+    UI.prog.update(progress)
 
-def main(direction, UI):
+def main(directionInput,directionOutput, UI):
 
     global tabsMoved
     global errorFiles
@@ -52,7 +54,7 @@ def main(direction, UI):
     errorFiles = []
     fileCount = 0
     tabsMoved = 0
-    files = os.listdir(os.path.abspath(direction))
+    files = os.listdir(os.path.abspath(directionInput))
     filesToTest = []
 
     for file in files:
@@ -61,12 +63,13 @@ def main(direction, UI):
 
     for gpFile in filesToTest:
 
-        fileDirection = direction + "\\" + gpFile
+        fileDirectionInput = os.path.join(directionInput, gpFile)
+        fileDirectionOutput = directionOutput
 
         try:
-            song = guitarpro.parse(fileDirection)
+            song = guitarpro.parse(fileDirectionInput)
         except:
-            print("error reading file - " + str(gpFile))
+            errorFiles.append(gpFile)
             continue
 
         sixthStringValue = 0
@@ -148,59 +151,61 @@ def main(direction, UI):
 
         # move Standard B
         if standardBcount >= 1:
-            moveFile(fileDirection, "Standard B", fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Standard B", fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfStandardB += 1
             UI.changeSong(gpFile)
 
         # move Drop B
         elif dropBcount >= 1:
-            moveFile(fileDirection, "Drop B", fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Drop B", fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfDropB += 1
             UI.changeSong(gpFile)
 
         # move Standard C
         elif standardCcount >= 1:
-            moveFile(fileDirection, "Standard C", fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Standard C", fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfStandardC += 1
             UI.changeSong(gpFile)
 
         # move Drop C
         elif dropCcount >= 1:
-            moveFile(fileDirection, "Drop C", fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Drop C", fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfDropC += 1
             UI.changeSong(gpFile)
 
         # move Standard D
         elif standardDcount >= 1:
-            moveFile(fileDirection, "Standard D", fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Standard D", fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfStandardD += 1
             UI.changeSong(gpFile)
 
         # move Drop D
         elif dropDcount >= 1:
-            moveFile(fileDirection, "Drop D", fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Drop D", fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfDropD += 1
             UI.changeSong(gpFile)
 
         # move Drop Db
         elif dropDbcount >= 1:
-            moveFile(fileDirection, "Drop Db", fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Drop Db", fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfDropDb += 1
             UI.changeSong(gpFile)
 
         # move Standard Eb
         elif standardEbcount >= 1:
-            moveFile(fileDirection, "Standard Eb", fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Standard Eb", fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfStandardEb += 1
             UI.changeSong(gpFile)
             
         # move Standard E
         elif standardEcount >= 1:
-            moveFile(fileDirection, "Standard E" , fileCount, filesToTest, UI)
+            moveFile(fileDirectionInput, "Standard E" , fileCount, filesToTest, UI, fileDirectionOutput)
             quantityOfStandardE += 1
             UI.changeSong(gpFile)
 
         else:
+            moveFile(fileDirectionInput,"unknown" , fileCount, filesToTest, UI, fileDirectionOutput)
+            UI.changeSong(gpFile)
             errorFiles.append(gpFile)
 
         sixthStringValue = 0
@@ -213,34 +218,9 @@ def main(direction, UI):
         dropDbcount = 0
         dropCcount = 0
         dropBcount = 0
+        
         fileCount += 1
 
-    if tabsMoved  == 0:
-        effectiveness = "100%"        
-    else:
-        effectiveness = str((tabsMoved / fileCount) * 100) + "%"
-        
-    print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]")
-    print("Finished!")
-    print("---------------------------------------------------------------------------------")
-    print(" Standard E found:   " + str(quantityOfStandardE))
-    print(" Standard Eb found:  " + str(quantityOfStandardEb))
-    print(" Standard D found:   " + str(quantityOfStandardD))
-    print(" Standard C found:   " + str(quantityOfStandardC))
-    print(" Standard B found:   " + str(quantityOfStandardB))
-    print(" Drop D found:       " + str(quantityOfDropD))
-    print(" Drop Db found:      " + str(quantityOfDropDb))
-    print(" Drop C found:       " + str(quantityOfDropC))
-    print(" Drop B found:       " + str(quantityOfDropB))
-
-    print()
-
-    print(" effectiveness:     ", effectiveness)
-
-
-if __name__ == "__main__":
-
-    main(direction, UI)
 
 
     

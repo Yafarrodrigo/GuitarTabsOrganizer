@@ -15,7 +15,7 @@ import os
 import copyFiles
 import moveFiles
 import analyzeFiles
-import threading
+# import threading
 
 class lunchFunc(QThread):
     progressChanged = pyqtSignal(int)
@@ -38,8 +38,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMinimumSize(QtCore.QSize(380, 150))
-        MainWindow.setMaximumSize(QtCore.QSize(380, 150))
+        MainWindow.setMinimumSize(QtCore.QSize(420, 150))
+        MainWindow.setMaximumSize(QtCore.QSize(420, 150))
         MainWindow.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -47,38 +47,46 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy)
-        self.centralwidget.setMinimumSize(QtCore.QSize(380, 150))
-        self.centralwidget.setMaximumSize(QtCore.QSize(380, 150))
+        self.centralwidget.setMinimumSize(QtCore.QSize(420, 150))
+        self.centralwidget.setMaximumSize(QtCore.QSize(420, 150))
         self.centralwidget.setObjectName("centralwidget")
         self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
-        self.progressBar.setGeometry(QtCore.QRect(10, 120, 360, 21))
+        self.progressBar.setGeometry(QtCore.QRect(10, 125, 410, 20))
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.startButton = QtWidgets.QPushButton(self.centralwidget)
-        self.startButton.setGeometry(QtCore.QRect(240, 40, 125, 55))
+        self.startButton.setGeometry(QtCore.QRect(210, 75, 200, 25))
         self.startButton.setObjectName("startButton")
         self.currentFileLabel = QtWidgets.QLabel(self.centralwidget)
-        self.currentFileLabel.setGeometry(QtCore.QRect(10, 98, 375, 21))
+        self.currentFileLabel.setGeometry(QtCore.QRect(10, 100, 375, 21))
         self.currentFileLabel.setText("")
         self.currentFileLabel.setObjectName("currentFileLabel")
         self.infoLabel = QtWidgets.QLabel(self.centralwidget)
         self.infoLabel.setGeometry(QtCore.QRect(80, 50, 101, 16))
         self.infoLabel.setObjectName("infoLabel")
         self.line = QtWidgets.QFrame(self.centralwidget)
-        self.line.setGeometry(QtCore.QRect(30, 60, 191, 16))
+        self.line.setGeometry(QtCore.QRect(30, 65, 360, 15))
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
         self.directionTextBox = QtWidgets.QLineEdit(self.centralwidget)
-        self.directionTextBox.setGeometry(QtCore.QRect(20, 10, 285, 25))
+        self.directionTextBox.setGeometry(QtCore.QRect(10, 10, 345, 25))
         self.directionTextBox.setFrame(True)
         self.directionTextBox.setProperty("text", os.getcwd())
         self.directionTextBox.setObjectName("directionTextBox")
+        self.directionTextBox2 = QtWidgets.QLineEdit(self.centralwidget)
+        self.directionTextBox2.setGeometry(QtCore.QRect(10, 40, 345, 25))
+        self.directionTextBox2.setFrame(True)
+        self.directionTextBox2.setProperty("text", os.getcwd())
+        self.directionTextBox2.setObjectName("directionTextBox2")
         self.browseButton = QtWidgets.QPushButton(self.centralwidget)
-        self.browseButton.setGeometry(QtCore.QRect(310, 10, 55, 25))
+        self.browseButton.setGeometry(QtCore.QRect(360, 10, 55, 25))
         self.browseButton.setObjectName("browseButton")
+        self.browseButton2 = QtWidgets.QPushButton(self.centralwidget)
+        self.browseButton2.setGeometry(QtCore.QRect(360, 40, 55, 25))
+        self.browseButton2.setObjectName("browseButton2")
         self.widget = QtWidgets.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(30, 70, 191, 21))
+        self.widget.setGeometry(QtCore.QRect(20, 75, 200, 25))
         self.widget.setObjectName("widget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -103,6 +111,7 @@ class Ui_MainWindow(object):
 
         self.startButton.clicked.connect(self.checkFuncAndStart)
         self.browseButton.clicked.connect(self.browseFolder)
+        self.browseButton2.clicked.connect(self.browseFolder2)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -110,6 +119,7 @@ class Ui_MainWindow(object):
         self.startButton.setText(_translate("MainWindow", "START"))
         self.infoLabel.setText(_translate("MainWindow", "Choose an action"))
         self.browseButton.setText(_translate("MainWindow", "Browse"))
+        self.browseButton2.setText(_translate("MainWindow", "Browse"))
         self.analyseFile.setText(_translate("MainWindow", "Analyze"))
         self.copyFile.setText(_translate("MainWindow", "Copy"))
         self.moveFile.setText(_translate("MainWindow", "Move"))
@@ -118,8 +128,13 @@ class Ui_MainWindow(object):
         folder = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
         self.directionTextBox.setText(folder)
 
+    def browseFolder2(self):
+        folder = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
+        self.directionTextBox2.setText(folder)
+
     def checkFuncAndStart(self):
-        direction = self.directionTextBox.text()
+        directionInput = self.directionTextBox.text()
+        directionOutput = self.directionTextBox2.text()
 
         if self.working == False:
             
@@ -130,7 +145,7 @@ class Ui_MainWindow(object):
                 self.prog.progressChanged.connect(self.Progress)
                 self.prog.start()
 
-                copyFiles.main(direction, self)
+                copyFiles.main(directionInput,directionOutput , self)
                 self.currentFileLabel.setText("")
                 self.working = False
 
@@ -139,7 +154,7 @@ class Ui_MainWindow(object):
                 self.prog.progressChanged.connect(self.Progress)
                 self.prog.start()
 
-                moveFiles.main(direction, self)
+                moveFiles.main(directionInput,directionOutput , self)
                 self.currentFileLabel.setText("")
                 self.working = False
 
@@ -148,7 +163,7 @@ class Ui_MainWindow(object):
                 self.prog.progressChanged.connect(self.Progress)
                 self.prog.start()
 
-                analyzeFiles.main(direction, self)
+                analyzeFiles.main(directionInput,directionOutput , self)
                 self.currentFileLabel.setText("")
                 self.working = False
 

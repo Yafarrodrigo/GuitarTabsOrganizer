@@ -4,19 +4,17 @@
 ## falta guitarras de 7 cuerdas
 
 import guitarpro
-import shutil
 import os
 import math
 
-def analyzeFile(gpFile , tuning, fileCount, filesToTest, UI):
+def analyzeFile(fileCount, filesToTest, UI):
     global tabsAnalyzed
-    print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]" + " -> " + tuning + " found !")
     tabsAnalyzed += 1   
 
     progress = math.floor((fileCount / len(filesToTest))*100)
     UI.prog.update(progress) 
 
-def main(direction, UI):
+def main(directionInput,directionOutput, UI):
 
     global tabsAnalyzed
     global errorFiles
@@ -46,7 +44,7 @@ def main(direction, UI):
     fileCount = 0
     tabsAnalyzed = 0
 
-    files = os.listdir(os.path.abspath(direction))
+    files = os.listdir(os.path.abspath(directionInput))
     filesToTest = []
 
     for file in files:
@@ -55,11 +53,12 @@ def main(direction, UI):
     
     for gpFile in filesToTest:
 
-        fileDirection = direction + "\\" + gpFile
+        fileDirectionInput = os.path.join(directionInput, gpFile)
+
         try:
-            song = guitarpro.parse(fileDirection)
+            song = guitarpro.parse(fileDirectionInput)
         except:
-            print("error reading file - " + str(gpFile))
+            errorFiles.append(gpFile)
             continue
 
         sixthStringValue = 0
@@ -141,56 +140,56 @@ def main(direction, UI):
 
         # move Standard B
         if standardBcount >= 1:
-            analyzeFile(gpFile, "Standard B", fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfStandardB += 1
             UI.changeSong(gpFile)
 
         # move Drop B
         elif dropBcount >= 1:
-            analyzeFile(gpFile, "Drop B", fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfDropB += 1
             UI.changeSong(gpFile)
 
         # move Standard C
         elif standardCcount >= 1:
-            analyzeFile(gpFile, "Standard C", fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfStandardC += 1
             UI.changeSong(gpFile)
     
 
         # move Drop C
         elif dropCcount >= 1:
-            analyzeFile(gpFile, "Drop C", fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfDropC += 1
             UI.changeSong(gpFile)
 
         # move Standard D
         elif standardDcount >= 1:
-            analyzeFile(gpFile, "Standard D", fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfStandardD += 1
             UI.changeSong(gpFile)
 
         # move Drop D
         elif dropDcount >= 1:
-            analyzeFile(gpFile, "Drop D", fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfDropD += 1
             UI.changeSong(gpFile)
 
         # move Drop Db
         elif dropDbcount >= 1:
-            analyzeFile(gpFile, "Drop Db", fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfDropDb += 1
             UI.changeSong(gpFile)
 
         # move Standard Eb
         elif standardEbcount >= 1:
-            analyzeFile(gpFile, "Standard Eb", fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfStandardEb += 1
             UI.changeSong(gpFile)
             
         # move Standard E
         elif standardEcount >= 1:
-            analyzeFile(gpFile, "Standard E" , fileCount, filesToTest, UI)
+            analyzeFile(fileCount, filesToTest, UI)
             quantityOfStandardE += 1
             UI.changeSong(gpFile)
 
@@ -210,34 +209,37 @@ def main(direction, UI):
 
         fileCount += 1
 
-    if tabsAnalyzed  == 0:
+        
+    if tabsAnalyzed == 0:
         effectiveness = "100%"        
     else:
-        effectiveness = str((tabsAnalyzed / fileCount) * 100) + "%"
-        
-    print("[ " + str(fileCount) + " / " + str(len(filesToTest)) + " ]")
-    print("Finished!")
-    print("---------------------------------------------------------------------------------")
-    print(" Standard E found:   " + str(quantityOfStandardE))
-    print(" Standard Eb found:  " + str(quantityOfStandardEb))
-    print(" Standard D found:   " + str(quantityOfStandardD))
-    print(" Standard C found:   " + str(quantityOfStandardC))
-    print(" Standard B found:   " + str(quantityOfStandardB))
-    print(" Drop D found:       " + str(quantityOfDropD))
-    print(" Drop Db found:      " + str(quantityOfDropDb))
-    print(" Drop C found:       " + str(quantityOfDropC))
-    print(" Drop B found:       " + str(quantityOfDropB))
-
-    print()
-
-    print(" effectiveness:     ", effectiveness)
-
-    print()
+        effectiveness = str((tabsAnalyzed  / fileCount) * 100) + "%"
 
 
-if __name__ == "__main__":
+    if not os.path.isdir(directionOutput):
+        os.makedirs(directionOutput)
 
-    main(direction, UI)
+    outputLog = directionOutput +"\\"+ "Analyzed files.txt"
+
+    errorFilesString = ""
+    for file in errorFiles:
+        errorFilesString = errorFilesString + "    " + file + "\n"
 
 
-    
+
+    f = open(outputLog, "w")
+    f.write("Standard E found:   " + str(quantityOfStandardE) +"\n"
+            "Standard Eb found:  " + str(quantityOfStandardEb) +"\n"
+            "Standard D found:   " + str(quantityOfStandardD) +"\n"
+            "Standard C found:   " + str(quantityOfStandardC) +"\n"
+            "Standard B found:   " + str(quantityOfStandardB) +"\n"
+            "Drop D found:       " + str(quantityOfDropD) +"\n"
+            "Drop Db found:      " + str(quantityOfDropDb) +"\n"
+            "Drop C found:       " + str(quantityOfDropC) +"\n"
+            "Drop B found:       " + str(quantityOfDropB) + "\n" + "\n" +
+            "Effectiveness:      " + str(effectiveness) + "\n" + "\n" +
+            "Couldn't analyze these:" + "\n" + "\n" +
+            errorFilesString )
+
+            
+    f.close()
