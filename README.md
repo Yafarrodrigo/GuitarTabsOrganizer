@@ -17,7 +17,7 @@ It only works with `.gp3` `.gp4` `.gp5` files at the moment.
 
 ## How to use
 
-To use it move `guitarProOrganizer.py` to the folder with all the guitar pro files and run it.
+To use it run `gpoMain.py`.
 
 ## Dependencies
 
